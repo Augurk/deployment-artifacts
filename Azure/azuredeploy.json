@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "website-name": {
+           "type": "string",
+           "metadata": {
+                "description": "Name of the website to deploy"
+            }
+        }
+    },
+    "variables": {
+        "plan-name": "[concat(parameters('website-name'), 'plan')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "name": "[variables('plan-name')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "B1",
+                "capacity": 1
+            },
+            "tags": {
+                "displayName": "[variables('plan-name')]"
+            },
+            "properties": {
+                "name": "[variables('plan-name')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2015-08-01",
+            "name": "[parameters('website-name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('plan-name'))]": "Resource",
+                "displayName": "[parameters('website-name')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', variables('plan-name'))]"
+            ],
+            "properties": {
+                "name": "[parameters('website-name')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('plan-name'))]",
+                "siteConfig": {
+                    "use32BitWorkerProcess": false
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "siteUri": {
+            "type": "string",
+            "value": "[reference(concat('Microsoft.Web/sites/', parameters('website-name'))).hostnames[0]]"
+        }
+    }
+}

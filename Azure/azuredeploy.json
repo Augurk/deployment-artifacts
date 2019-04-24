@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2018-02-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "website-name": {
@@ -31,7 +31,7 @@
         },
         {
             "type": "Microsoft.Web/sites",
-            "apiVersion": "2015-08-01",
+            "apiVersion": "2018-02-01",
             "name": "[parameters('website-name')]",
             "location": "[resourceGroup().location]",
             "tags": {
@@ -47,7 +47,19 @@
                 "siteConfig": {
                     "use32BitWorkerProcess": false
                 }
-            }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2018-02-01",
+                    "name": "Microsoft.AspNetCore.AzureAppServices.SiteExtension",
+                    "type": "siteextensions",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('website-name'))]",
+                        "[resourceId('Microsoft.Web/Sites/config', parameters('website-name'), 'web')]"
+                        ],
+                    "properties": { }
+                }
+            ]
         }
     ],
     "outputs": {

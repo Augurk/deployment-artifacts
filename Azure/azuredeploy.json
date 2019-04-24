@@ -55,8 +55,7 @@
                     "type": "siteextensions",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('website-name'))]",
-                        "[resourceId('Microsoft.Web/Sites/config', parameters('website-name'), 'web')]"
-                        ],
+                    ],
                     "properties": { }
                 }
             ]
